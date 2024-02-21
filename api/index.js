@@ -13,6 +13,7 @@ const app = express();
 //middleware
 
 app.use(express.json());
+//TO DO:remove morgan in production
 app.use(morgan("dev"));
 
 //routes
