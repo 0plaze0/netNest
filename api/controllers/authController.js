@@ -1,5 +1,6 @@
 import User from "./../model/userModel.js";
-import { createHash } from "./../utils/authUtils.js";
+import { compareHash, createHash } from "./../utils/authUtils.js";
+import JWT from "jsonwebtoken";
 
 const register = async (req, res) => {
   const { name, email, password, phone, address } = req.body;
@@ -38,4 +39,40 @@ const register = async (req, res) => {
   }
 };
 
-export default { register };
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password)
+      return res.status(400).json({ message: "Invalid email or password" });
+    //checkuser
+    const user = await User.findOne({ email });
+    const comparePwd = await compareHash(password, user.password);
+    if (!comparePwd)
+      return res.status(200).json({ message: "Password didn't match" });
+
+    const token = await JWT.sign(
+      { _id: user._id },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    return res
+      .status(200)
+      .cookie("access-token", token, {
+        sameSite: "none",
+        secure: "false",
+      })
+      .json({
+        _id: user._id,
+        email: user.email,
+        address: user.address,
+        phone: user.phone,
+        token,
+      });
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+
+export default { register, login };
