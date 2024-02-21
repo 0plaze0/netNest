@@ -1,8 +1,9 @@
 import bcrypt from "bcrypt";
+import "dotenv/config";
 
 const createHash = async (password) => {
   try {
-    const salt = process.env.SALT;
+    const salt = parseInt(process.env.SALT);
     const hashPwd = bcrypt.hash(password, salt);
     return hashPwd;
   } catch (err) {
@@ -18,4 +19,4 @@ const compareHash = async (password, hashedPassword) => {
   }
 };
 
-export default { createHash, compareHash };
+export { createHash, compareHash };
