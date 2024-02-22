@@ -75,4 +75,17 @@ const login = async (req, res) => {
   }
 };
 
-export default { register, login };
+const test = (req, res) => {
+  try {
+    return res.status(200).json({ message: "Protected Route" });
+  } catch (err) {
+    console.log(err.message);
+    return res.status(401).send({
+      success: false,
+      err,
+      message: "Error in admin middleware",
+    });
+  }
+};
+
+export default { register, login, test };
